@@ -26,3 +26,77 @@
 
 ---
 ### Решение 2
+bash:
+```
+#!/bin/bash
+
+curl localhost &> /dev/null
+if [ "$?" -ne 0 ]; then exit 1; fi
+if [ ! -f "/var/www/html/index.nginx-debian.html" ]; then exit 1; fi
+```
+keepalive master:
+```
+global_defs {
+    enable_script_security
+}
+
+vrrp_script check_nginx {
+        script "/home/jinon/netcheck.sh"
+        interval 3
+        user jinon
+}
+
+vrrp_instance VI_1 {
+        state MASTER
+        interface ens33
+        virtual_router_id 5
+        priority 110
+        advert_int 1
+
+        virtual_ipaddress {
+              192.200.0.150/24
+        }
+
+        track_script {
+                   check_nginx
+        }
+}
+```
+keepalive BACKUP:
+```
+global_defs {
+    enable_script_security
+}
+
+vrrp_script check_nginx {
+        script "/home/jinon/netcheck.sh"
+        interval 3
+        user jinon
+}
+
+vrrp_instance VI_1 {
+        state BACKUP
+        interface ens33
+        virtual_router_id 5
+        priority 100
+        advert_int 1
+
+        virtual_ipaddress {
+              192.200.0.150/24
+        }
+
+        track_script {
+                   check_nginx
+        }
+}
+```
+#### До "падения" мастера:
+
+![image](https://github.com/jinnonn/netology-keepalived-hw/assets/146999555/660dfe50-3ed3-4f37-ac62-8df7ef6519b6)
+![image](https://github.com/jinnonn/netology-keepalived-hw/assets/146999555/c61b5ce5-85a9-42d3-a09c-ed2127df74b7)
+#### После "падения" мастера:
+
+![image](https://github.com/jinnonn/netology-keepalived-hw/assets/146999555/660dfe50-3ed3-4f37-ac62-8df7ef6519b6)
+![image](https://github.com/jinnonn/netology-keepalived-hw/assets/146999555/a2f2a6e1-ad17-4742-b0ed-e0f8a7a1d8e4)
+
+
