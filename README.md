@@ -14,6 +14,7 @@
 ---
 ### Решение 1
 ![image](https://github.com/jinnonn/netology-keepalived-hw/assets/146999555/f9a54a7c-4777-4f4d-90b1-38467344f81e)
+
 Схема в формате pkt лежит в данном репозитории.
 ---
 ### Задание 2
